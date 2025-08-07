@@ -30,6 +30,9 @@ function connect() {
     ws.onopen = function (event) {
         title = "Connected";
         addSystemMessage('Successfully connected to the server');
+        
+        // 连接成功后请求历史消息
+        requestHistory();
     };
 
     ws.onmessage = function (event) {
@@ -47,6 +50,20 @@ function connect() {
         title = "Connection error";
         addSystemMessage('Connection error');
     };
+}
+
+// 请求历史消息
+function requestHistory() {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const historyMessage = {
+            event: 'get_history',
+            data: {
+                name: 'system',
+                data: 'request_history'
+            }
+        };
+        ws.send(JSON.stringify(historyMessage));
+    }
 }
 
 // Handle received messages
@@ -126,6 +143,18 @@ function setUserName() {
 
     username = nameInput.value.trim();
     addSystemMessage(`Username set to: ${username}`);
+    
+    // 用户设置名称后发送进入房间消息
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const enterMessage = {
+            event: 'enter_room',
+            data: {
+                name: username,
+                data: 'entered the chat room'
+            }
+        };
+        ws.send(JSON.stringify(enterMessage));
+    }
 }
 
 // Send message
