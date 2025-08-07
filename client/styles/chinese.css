@@ -107,6 +107,69 @@ body {
     font-family: 'STFangsong', 'FangSong', serif;
 }
 
+/* 代码块样式，确保不被.content样式覆盖 */
+.content pre {
+    background-color: #f0e8d8;
+    border: 1px solid #d4c0a3;
+    border-radius: 4px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 10px 0;
+    font-family: 'Courier New', Consolas, Monaco, 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.content code {
+    background-color: #f0e8d8;
+    border: 1px solid #d4c0a3;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: 'Courier New', Consolas, Monaco, 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    color: #5a3921;
+}
+
+.content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #5a3921;
+    font-size: 0.9rem;
+}
+
+/* 表格样式 */
+.content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    font-family: 'STSong', 'SimSun', 'Songti SC', serif;
+}
+
+.content table th,
+.content table td {
+    border: 1px solid #b89c64;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.content table th {
+    background-color: #8e0000;
+    color: #f8f0e5;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'STKaiti', 'Kaiti SC', cursive;
+}
+
+.content table tr:nth-child(even) {
+    background-color: rgba(232, 213, 181, 0.3);
+}
+
+.content table tr:hover {
+    background-color: rgba(245, 233, 218, 0.5);
+}
+
 .system-message {
     text-align: center;
     padding: 12px;
@@ -138,12 +201,31 @@ body {
     font-size: 1rem;
 }
 
+.input-area textarea {
+    background-color: #fdf6ee;
+    color: #4a3c2f;
+    border: 1px solid #d4c0a3;
+    padding: 12px;
+    font-family: 'STSong', 'SimSun', 'Songti SC', serif;
+    border-radius: 4px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 60px;
+}
+
 .input-area input {
     flex: 1;
     outline: none;
 }
 
-.input-area input:focus {
+.input-area textarea {
+    flex: 1;
+    outline: none;
+    resize: vertical;
+}
+
+.input-area input:focus,
+.input-area textarea:focus {
     border-color: #b89c64;
     box-shadow: 0 0 5px rgba(184, 156, 100, 0.5);
 }

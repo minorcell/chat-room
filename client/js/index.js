@@ -4,6 +4,23 @@ let username = '';
 let title = document.title;
 let currentTheme = 'retro';
 
+// 配置marked.js
+marked.setOptions({
+  highlight: function(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+    try {
+      return hljs.highlight(code, { language }).value;
+    } catch (err) {
+      console.error('Highlight error:', err);
+      return code;
+    }
+  },
+  langPrefix: 'hljs language-',
+  // 启用表格渲染支持
+  gfm: true,
+  tables: true
+});
+
 // Connect to WebSocket server
 function connect() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -76,16 +93,26 @@ function addUserMessage(message) {
     const now = new Date();
     const timestamp = now.toLocaleTimeString();
 
+    // 使用marked.js渲染Markdown内容
+    const renderedContent = marked.parse(message.data.data);
+
     messageElement.innerHTML = `
         <div class="message-header">
             <span class="username">${message.data.name}</span>
             <span class="timestamp">${timestamp}</span>
         </div>
-        <div class="content">${message.data.data}</div>
+        <div class="content">${renderedContent}</div>
     `;
 
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // 再次高亮代码块（以防marked.js的highlight选项未生效）
+    messageElement.querySelectorAll('pre code').forEach((block) => {
+        if (typeof hljs !== 'undefined') {
+            hljs.highlightElement(block);
+        }
+    });
 }
 
 // Set username
@@ -131,16 +158,23 @@ function sendMessage() {
 // Switch theme
 function switchTheme(theme) {
     const themeStyle = document.getElementById('theme-style');
+    const highlightStyle = document.getElementById('highlight-style');
 
     switch (theme) {
         case 'modern':
             themeStyle.href = './styles/modern.css';
+            // 根据主题切换代码高亮样式
+            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/github-dark.css';
             break;
         case 'chinese':
             themeStyle.href = './styles/chinese.css';
+            // 根据主题切换代码高亮样式
+            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/monokai.css';
             break;
         default:
             themeStyle.href = './styles/retro.css';
+            // 根据主题切换代码高亮样式
+            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css';
     }
 
     currentTheme = theme;
@@ -156,7 +190,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('themeSelect').value = savedTheme;
     }
 
-    connect();
+    // 确保hljs库加载完成后再连接WebSocket
+    setTimeout(() => {
+        connect();
+    }, 100);
 
     const setNameButton = document.getElementById('setNameButton');
     const sendButton = document.getElementById('sendButton');
@@ -171,7 +208,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     messageInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
+        // 修改为Ctrl+Enter发送消息，以便用户可以在textarea中按Enter换行
+        if (e.key === 'Enter' && e.ctrlKey) {
             sendMessage();
         }
     });

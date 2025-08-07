@@ -101,6 +101,67 @@ body {
     color: #00dd00;
 }
 
+/* 代码块样式，确保不被.content样式覆盖 */
+.content pre {
+    background-color: #1a1a1a;
+    border: 1px solid #005500;
+    border-radius: 4px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 10px 0;
+    font-family: 'Courier New', Consolas, Monaco, 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.content code {
+    background-color: #002200;
+    border: 1px solid #005500;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-family: 'Courier New', Consolas, Monaco, 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    color: #00ff00;
+}
+
+.content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #00ff00;
+    font-size: 0.9rem;
+}
+
+/* 表格样式 */
+.content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 0.9rem;
+}
+
+.content table th,
+.content table td {
+    border: 1px solid #00cc00;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.content table th {
+    background-color: #002200;
+    color: #00ff00;
+    font-weight: bold;
+    text-align: center;
+}
+
+.content table tr:nth-child(even) {
+    background-color: rgba(0, 34, 0, 0.3);
+}
+
+.content table tr:hover {
+    background-color: rgba(0, 100, 0, 0.3);
+}
+
 .system-message {
     color: #ffff00;
     text-align: center;
@@ -128,12 +189,30 @@ body {
     border-radius: 0;
 }
 
+.input-area textarea {
+    background-color: #000;
+    color: #00ff00;
+    border: 1px solid #005500;
+    padding: 12px;
+    font-family: 'Courier New', Consolas, Monaco, 'Ubuntu Mono', monospace;
+    border-radius: 0;
+    resize: vertical;
+    min-height: 60px;
+}
+
 .input-area input {
     flex: 1;
     outline: none;
 }
 
-.input-area input:focus {
+.input-area textarea {
+    flex: 1;
+    outline: none;
+    resize: vertical;
+}
+
+.input-area input:focus,
+.input-area textarea:focus {
     border-color: #00ff00;
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }

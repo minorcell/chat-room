@@ -7,9 +7,13 @@
     <meta name="description"
         content="Chat Dao - Real-time chat room supporting multi-user instant messaging with multiple theme options">
     <meta name="keywords" content="chat room, real-time chat, online chat, instant messaging, multi-user chat">
-    <meta name="author" content="Chat Dao Team">
+    <meta name="author" content="github.com/minorcell">
     <title>Chat Dao - Real-time Online Chat Room</title>
     <link rel="stylesheet" href="./styles/retro.css" id="theme-style">
+    <!-- Markdown和代码高亮库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/index.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css" id="highlight-style">
 </head>
 
 <body>
@@ -44,7 +48,7 @@
                 </div>
             </div>
             <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Type your message..." maxlength="200">
+                <textarea id="messageInput" placeholder="Type your message (Markdown supported)..." rows="3"></textarea>
                 <button id="sendButton">Send</button>
             </div>
         </div>
