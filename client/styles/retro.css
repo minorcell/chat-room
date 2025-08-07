@@ -1,4 +1,4 @@
-/* 复古暗黑主题样式 */
+/* 早期互联网风格样式 (2000年代初) */
 * {
     margin: 0;
     padding: 0;
@@ -6,9 +6,10 @@
 }
 
 body {
-    font-family: 'Courier New', monospace;
-    background-color: #0a0a0a;
-    color: #00ff00;
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #ffffcc;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M0 0L100 100M100 0L0 100' stroke='%23cccc99' stroke-width='0.5' stroke-opacity='0.3'/%3e%3c/svg%3e");
+    color: #000000;
     height: 100vh;
     overflow: hidden;
     max-height: 100vh;
@@ -21,105 +22,125 @@ body {
     max-height: 100vh;
     max-width: 900px;
     margin: 0 auto;
-    border: 2px solid #00ff00;
-    background-color: #111;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    border: 3px outset #cccc99;
+    background-color: #ffffff;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 .header {
-    background-color: #001a00;
-    border-bottom: 2px solid #00ff00;
+    background-color: #000099;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3e%3crect x='0' y='0' width='100' height='100' fill='%230000cc'/%3e%3c/svg%3e");
+    border-bottom: 2px solid #000000;
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: #ffffff;
 }
 
 .header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
+    font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    color: #00ff00;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    letter-spacing: 1px;
+    color: #ffff00;
+    text-shadow: 2px 2px 0 #000000;
+    font-family: 'Arial Black', 'Arial Bold', sans-serif;
 }
 
 .online-info {
-    font-size: 1rem;
+    font-size: 1.1rem;
     letter-spacing: 1px;
+    color: #ffffff;
+    background-color: #ff0000;
+    padding: 3px 8px;
+    border: 2px outset #ff6666;
+    font-weight: bold;
 }
 
 .chat-area {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 10px;
+    padding: 15px;
     overflow: hidden;
+    background-color: #f0f0f0;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='50' height='50' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3e%3crect x='0' y='0' width='50' height='50' fill='%23e0e0e0'/%3e%3c/svg%3e");
 }
 
 .messages {
     flex: 1;
     overflow-y: auto;
     padding: 15px;
-    background-color: #000;
-    border: 1px solid #005500;
+    background-color: #ffffff;
+    border: 2px inset #cccccc;
     margin-bottom: 15px;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    max-height: calc(100vh - 200px);
+    font-size: 1rem;
+    line-height: 1.4;
+    max-height: calc(100vh - 220px);
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .message {
-    margin-bottom: 12px;
-    padding: 8px;
-    border-left: 2px solid #00aa00;
-    background-color: rgba(0, 20, 0, 0.3);
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    background-color: #fafafa;
 }
 
 .message-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
-    font-size: 0.8rem;
-    color: #00cc00;
+    font-size: 0.9rem;
+    color: #666666;
+    font-weight: bold;
+    border-bottom: 1px dotted #999999;
+    padding-bottom: 3px;
 }
 
 .username {
     font-weight: bold;
-    text-transform: uppercase;
+    color: #000099;
+    text-transform: none;
 }
 
 .timestamp {
-    color: #008800;
+    color: #990000;
+    font-style: italic;
 }
 
 .content {
     word-wrap: break-word;
+    color: #000000;
 }
 
 .system-message {
-    color: #ffff00;
+    color: #990000;
     text-align: center;
     padding: 10px;
-    border: 1px dashed #ffff00;
+    border: 2px dashed #ff0000;
     margin-bottom: 15px;
-    background-color: rgba(255, 255, 0, 0.1);
+    background-color: #ffffcc;
+    font-weight: bold;
 }
 
 .input-area {
     display: flex;
     gap: 10px;
-    padding: 10px;
-    background-color: #001a00;
-    border: 1px solid #005500;
+    padding: 12px;
+    background-color: #d0d0d0;
+    border: 2px outset #cccccc;
 }
 
 .input-area input,
 .input-area button {
-    background-color: #000;
-    color: #00ff00;
-    border: 1px solid #005500;
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px inset #cccccc;
     padding: 10px;
-    font-family: 'Courier New', monospace;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1rem;
 }
 
 .input-area input {
@@ -128,45 +149,55 @@ body {
 }
 
 .input-area input:focus {
-    border-color: #00ff00;
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    border: 2px solid #0000ff;
+    background-color: #fffff0;
 }
 
 .input-area button {
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.1s;
+    font-weight: bold;
+    background-color: #000099;
+    color: #ffffff;
+    border: 2px outset #0000cc;
+    min-width: 80px;
 }
 
 .input-area button:hover {
-    background-color: #003300;
-    box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
-    border-color: #00ff00;
+    background-color: #0000cc;
+    border: 2px outset #3333ff;
+}
+
+.input-area button:active {
+    border: 2px inset #000099;
 }
 
 /* 滚动条样式 */
 .messages::-webkit-scrollbar {
-    width: 8px;
+    width: 16px;
 }
 
 .messages::-webkit-scrollbar-track {
-    background: #001100;
+    background: #f0f0f0;
+    border-left: 1px solid #cccccc;
 }
 
 .messages::-webkit-scrollbar-thumb {
-    background: #005500;
+    background: #c0c0c0;
+    border: 1px outset #a0a0a0;
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-    background: #00aa00;
+    background: #a0a0a0;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
     .header h1 {
-        font-size: 1.3rem;
-        letter-spacing: 1px;
+        font-size: 1.5rem;
+        letter-spacing: 0;
     }
     
     .input-area {
@@ -183,6 +214,32 @@ body {
     }
     
     .messages {
-        max-height: calc(100vh - 250px);
+        max-height: calc(100vh - 270px);
     }
+}
+
+/* 主题切换下拉菜单样式 */
+.theme-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.theme-selector select {
+    background-color: #000099;
+    color: #ffffff;
+    border: 2px outset #3333ff;
+    padding: 5px 10px;
+    font-family: 'Times New Roman', Times, serif;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.theme-selector select:focus {
+    outline: 2px solid #ff0000;
+}
+
+.theme-selector option {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Times New Roman', Times, serif;
 }

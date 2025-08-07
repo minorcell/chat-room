@@ -1,39 +1,56 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Dao</title>
-    <link rel="stylesheet" href="./styles/retro.css">
+    <meta name="description"
+        content="Chat Dao - Real-time chat room supporting multi-user instant messaging with multiple theme options">
+    <meta name="keywords" content="chat room, real-time chat, online chat, instant messaging, multi-user chat">
+    <meta name="author" content="Chat Dao Team">
+    <title>Chat Dao - Real-time Online Chat Room</title>
+    <link rel="stylesheet" href="./styles/retro.css" id="theme-style">
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <h1> Chat Dao </h1>
-            <div class="online-info">
-                <span>Online: </span>
-                <span id="onlineCount">0</span>
+            <h1>Chat Dao</h1>
+            <div class="header-controls">
+                <div class="online-info">
+                    <span>Online: </span>
+                    <span id="onlineCount">0</span>
+                </div>
+                <div class="theme-selector">
+                    <select id="themeSelect">
+                        <option value="retro">Early Web</option>
+                        <option value="modern">Geek Style</option>
+                        <option value="chinese">Chinese Style</option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <div class="input-area">
-            <input type="text" id="nameInput" placeholder="昵称" maxlength="20">
-            <button id="setNameButton">设置</button>
+            <input type="text" id="nameInput" placeholder="Enter your nickname" maxlength="20">
+            <button id="setNameButton">Set Name</button>
         </div>
 
         <div class="chat-area">
             <div class="messages" id="messages">
+                <div class="system-message">
+                    <span class="timestamp">System Message</span>
+                    <span class="content">Welcome to Chat Dao Chat Room!</span>
+                </div>
             </div>
             <div class="input-area">
-                <input type="text" id="messageInput" placeholder="输入消息..." maxlength="200">
+                <input type="text" id="messageInput" placeholder="Type your message..." maxlength="200">
                 <button id="sendButton">Send</button>
             </div>
         </div>
     </div>
 
-    <script src="./js/retro.js"></script>
+    <script src="./js/index.js"></script>
 </body>
 
 </html>

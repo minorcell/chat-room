@@ -1,16 +1,17 @@
-// 复古风格聊天室的WebSocket处理逻辑
+// WebSocket handling logic for retro-style chat room
 let ws;
 let username = '';
-let title = document.title
+let title = document.title;
+let currentTheme = 'retro';
 
-// 连接到WebSocket服务器
+// Connect to WebSocket server
 function connect() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
     ws = new WebSocket(`${protocol}//${host}/ws`);
 
     ws.onopen = function (event) {
-        title = "Connected"
+        title = "Connected";
         addSystemMessage('Successfully connected to the server');
     };
 
@@ -20,18 +21,18 @@ function connect() {
     };
 
     ws.onclose = function (event) {
-        title = "Connection closed"
+        title = "Connection closed";
         addSystemMessage('Disconnected from the server. Reconnecting...');
-        setTimeout(connect, 3000); // 3秒后重连
+        setTimeout(connect, 3000); // Reconnect after 3 seconds
     };
 
     ws.onerror = function (error) {
-        title = "Connection error"
-        addSystemMessage('Connection error.');
+        title = "Connection error";
+        addSystemMessage('Connection error');
     };
 }
 
-// 处理接收到的消息
+// Handle received messages
 function handleMessage(message) {
     switch (message.event) {
         case 'online_count':
@@ -48,7 +49,7 @@ function handleMessage(message) {
     }
 }
 
-// 添加系统消息
+// Add system message
 function addSystemMessage(text) {
     const messagesDiv = document.getElementById('messages');
     const messageElement = document.createElement('div');
@@ -66,7 +67,7 @@ function addSystemMessage(text) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// 添加用户消息
+// Add user message
 function addUserMessage(message) {
     const messagesDiv = document.getElementById('messages');
     const messageElement = document.createElement('div');
@@ -87,34 +88,34 @@ function addUserMessage(message) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// 设置用户名
+// Set username
 function setUserName() {
     const nameInput = document.getElementById('nameInput');
-    
+
     if (!nameInput.value.trim()) {
-        addSystemMessage('Please enter a name.');
+        addSystemMessage('Please enter a username');
         return;
     }
-    
+
     username = nameInput.value.trim();
     addSystemMessage(`Username set to: ${username}`);
 }
 
-// 发送消息
+// Send message
 function sendMessage() {
     const messageInput = document.getElementById('messageInput');
 
     if (!username) {
-        addSystemMessage('Please set a username first.');
+        addSystemMessage('Please set a username first');
         return;
     }
 
     if (!messageInput.value.trim()) {
-        addSystemMessage('Please enter a message.');
+        addSystemMessage('Please enter a message');
         return;
     }
 
-    // 发送聊天消息
+    // Send chat message
     const chatMessage = {
         event: 'chat_text',
         data: {
@@ -127,24 +128,54 @@ function sendMessage() {
     messageInput.value = '';
 }
 
-// 页面加载完成后初始化
+// Switch theme
+function switchTheme(theme) {
+    const themeStyle = document.getElementById('theme-style');
+
+    switch (theme) {
+        case 'modern':
+            themeStyle.href = './styles/modern.css';
+            break;
+        case 'chinese':
+            themeStyle.href = './styles/chinese.css';
+            break;
+        default:
+            themeStyle.href = './styles/retro.css';
+    }
+
+    currentTheme = theme;
+    localStorage.setItem('chatDaoTheme', theme);
+}
+
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function () {
+    // Check for saved theme in localStorage
+    const savedTheme = localStorage.getItem('chatDaoTheme') || 'retro';
+    if (savedTheme !== currentTheme) {
+        switchTheme(savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+    }
+
     connect();
 
     const setNameButton = document.getElementById('setNameButton');
     const sendButton = document.getElementById('sendButton');
     const messageInput = document.getElementById('messageInput');
     const nameInput = document.getElementById('nameInput');
+    const themeSelect = document.getElementById('themeSelect');
 
     setNameButton.addEventListener('click', setUserName);
     sendButton.addEventListener('click', sendMessage);
+    themeSelect.addEventListener('change', function () {
+        switchTheme(this.value);
+    });
 
     messageInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             sendMessage();
         }
     });
-    
+
     nameInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             setUserName();
