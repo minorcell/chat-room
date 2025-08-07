@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Dao</title>
+    <link rel="stylesheet" href="./styles/retro.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Chat Dao </h1>
+            <div class="online-info">
+                <span>Online: </span>
+                <span id="onlineCount">0</span>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="nameInput" placeholder="昵称" maxlength="20">
+            <button id="setNameButton">设置</button>
+        </div>
+
+        <div class="chat-area">
+            <div class="messages" id="messages">
+            </div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="输入消息..." maxlength="200">
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/retro.js"></script>
+</body>
+
+</html>
