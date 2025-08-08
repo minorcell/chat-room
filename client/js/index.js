@@ -153,35 +153,41 @@ class ModalManager {
   }
 
   show(message, title = "QQ2000", icon = "⚠️", buttons = null) {
-    const titleElement = document.getElementById("modalTitle");
-    const messageElement = document.getElementById("modalMessage");
+    const titleElement = this.modal.querySelector("#modalTitle");
+    const messageElement = this.modal.querySelector("#modalMessage");
     const iconElement = this.modal.querySelector(".win98-modal-system-icon");
-    const buttonsContainer = document.getElementById("modalButtons");
+    const buttonsContainer = this.modal.querySelector("#modalButtons");
 
-    titleElement.textContent = title;
-    messageElement.textContent = message;
-    iconElement.textContent = icon;
+    if (titleElement) titleElement.textContent = title;
+    if (messageElement) messageElement.textContent = message;
+    if (iconElement) iconElement.textContent = icon;
 
-    if (buttons && Array.isArray(buttons)) {
-      buttonsContainer.innerHTML = "";
-      buttons.forEach((button) => {
-        const btn = document.createElement("button");
-        btn.className = "win98-modal-button";
-        btn.textContent = button.text;
-        btn.addEventListener("click", button.action);
-        buttonsContainer.appendChild(btn);
-      });
-    } else {
-      buttonsContainer.innerHTML =
-        '<button class="win98-modal-button" onclick="window.modalManager.hide()">确定</button>';
+    if (buttonsContainer) {
+      if (buttons && Array.isArray(buttons)) {
+        buttonsContainer.innerHTML = "";
+        buttons.forEach((button) => {
+          const btn = document.createElement("button");
+          btn.className = "win98-modal-button";
+          btn.textContent = button.text;
+          btn.addEventListener("click", button.action);
+          buttonsContainer.appendChild(btn);
+        });
+      } else {
+        buttonsContainer.innerHTML =
+          '<button class="win98-modal-button" onclick="window.modalManager.hide()">确定</button>';
+      }
     }
 
     this.modal.classList.add("show");
 
     setTimeout(() => {
-      const firstButton = buttonsContainer.querySelector(".win98-modal-button");
-      if (firstButton) {
-        firstButton.focus();
+      if (buttonsContainer) {
+        const firstButton = buttonsContainer.querySelector(
+          ".win98-modal-button",
+        );
+        if (firstButton) {
+          firstButton.focus();
+        }
       }
     }, 100);
   }
@@ -409,11 +415,7 @@ class MessageManager {
     const timeDiff = now - messageData.timestamp;
 
     if (timeDiff > 120000) {
-      window.modalManager.show(
-        "撤回时间已过，无法撤回此消息",
-        "撤回失败",
-        "⚠️",
-      );
+      console.log("撤回时间已过，无法撤回此消息");
       return;
     }
 
@@ -559,10 +561,14 @@ class MessageManager {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        window.modalManager.show("消息已复制到剪贴板", "复制成功", "✅");
+        if (window.modalManager) {
+          modalManager.show("消息已复制到剪贴板", "复制成功", "✅");
+        }
       })
       .catch(() => {
-        window.modalManager.show("复制失败", "错误", "❌");
+        if (window.modalManager) {
+          modalManager.show("复制失败", "错误", "❌");
+        }
       });
   }
 
@@ -630,6 +636,8 @@ class ImageManager {
   constructor() {
     this.maxFileSize = 2 * 1024 * 1024; // 2MB
     this.allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    this.isProcessing = false; // 添加处理状态标志
+    console.log("ImageManager constructed");
     this.init();
   }
 
@@ -674,7 +682,7 @@ class ImageManager {
   selectImage() {
     if (!window.username) {
       if (window.modalManager) {
-        window.modalManager.show("请先登录！", "提示", "⚠️");
+        modalManager.show("请先登录！", "提示", "⚠️");
       }
       return;
     }
@@ -682,6 +690,7 @@ class ImageManager {
   }
 
   handleFileSelect(e) {
+    console.log("handleFileSelect called");
     const file = e.target.files[0];
     if (file) {
       this.processImage(file);
@@ -691,7 +700,7 @@ class ImageManager {
 
   handleFileDrop(e) {
     if (!window.username) {
-      window.modalManager.show("请先登录！", "提示", "⚠️");
+      console.log("请先登录！");
       return;
     }
 
@@ -702,22 +711,38 @@ class ImageManager {
   }
 
   processImage(file) {
+    console.log("processImage called, isProcessing:", this.isProcessing);
+
+    // 防止重复处理
+    if (this.isProcessing) {
+      console.log("Already processing an image, ignoring");
+      return;
+    }
+
+    this.isProcessing = true;
+
     if (!this.allowedTypes.includes(file.type)) {
-      window.modalManager.show(
-        "不支持的图片格式！\n支持的格式：JPG、PNG、GIF、WebP",
-        "格式错误",
-        "❌",
-      );
+      this.isProcessing = false;
+      if (window.modalManager) {
+        modalManager.show(
+          "不支持的图片格式！\n支持的格式：JPG、PNG、GIF、WebP",
+          "格式错误",
+          "❌",
+        );
+      }
       return;
     }
 
     if (file.size > this.maxFileSize) {
+      this.isProcessing = false;
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-      window.modalManager.show(
-        `图片太大了！\n当前大小：${sizeMB}MB\n最大允许：2MB`,
-        "文件过大",
-        "❌",
-      );
+      if (window.modalManager) {
+        modalManager.show(
+          `图片太大了！\n当前大小：${sizeMB}MB\n最大允许：2MB`,
+          "文件过大",
+          "❌",
+        );
+      }
       return;
     }
 
@@ -730,17 +755,26 @@ class ImageManager {
     };
 
     reader.onerror = () => {
+      this.isProcessing = false;
       this.hideUploadProgress();
-      window.modalManager.show("读取图片失败！", "错误", "❌");
+      console.log("读取图片失败！");
     };
 
     reader.readAsDataURL(file);
   }
 
   sendImage(imageData, fileName) {
+    console.log("sendImage called");
+    console.log(
+      "WebSocket状态检查:",
+      window.ws ? window.ws.readyState : "WebSocket未定义",
+    );
     if (!window.ws || window.ws.readyState !== WebSocket.OPEN) {
+      this.isProcessing = false;
       this.hideUploadProgress();
-      window.modalManager.show("连接已断开，无法发送图片！", "连接错误", "❌");
+      if (window.modalManager) {
+        modalManager.show("连接已断开，无法发送图片！", "连接错误", "❌");
+      }
       return;
     }
 
@@ -757,12 +791,15 @@ class ImageManager {
     };
 
     try {
+      console.log("Sending image message to server");
       window.ws.send(JSON.stringify(imageMessage));
       this.hideUploadProgress();
-      window.messageManager.addUserMessage(imageMessage);
+      this.isProcessing = false;
+      // 不在本地添加消息，等待服务器广播回来
     } catch (error) {
+      this.isProcessing = false;
       this.hideUploadProgress();
-      window.modalManager.show("发送图片失败！", "发送错误", "❌");
+      console.log("发送图片失败！");
       console.error("发送图片错误:", error);
     }
   }
@@ -861,7 +898,13 @@ function updateCharCount() {
 function connect() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = window.location.host;
-  ws = new WebSocket(`${protocol}//${host}/ws`);
+  const wsUrl = `${protocol}//${host}/ws`;
+  console.log("正在连接WebSocket:", wsUrl);
+
+  ws = new WebSocket(wsUrl);
+  window.ws = ws;
+
+  console.log("WebSocket创建完成，当前状态:", ws.readyState);
 
   ws.onopen = function (event) {
     document.title = "已连接 - 唠嗑岛 QQ2000";
@@ -886,16 +929,16 @@ function connect() {
           data: "进入了聊天室",
         },
       };
-      ws.send(JSON.stringify(enterMessage));
+      window.ws.send(JSON.stringify(enterMessage));
     }
   };
 
-  ws.onmessage = function (event) {
+  window.ws.onmessage = function (event) {
     const message = JSON.parse(event.data);
     handleMessage(message);
   };
 
-  ws.onclose = function (event) {
+  window.ws.onclose = function (event) {
     document.title = "连接断开 - 唠嗑岛 QQ2000";
     updateConnectionStatus("连接断开");
     if (window.messageManager) {
@@ -907,7 +950,7 @@ function connect() {
     }, 3000);
   };
 
-  ws.onerror = function (error) {
+  window.ws.onerror = function (error) {
     console.error("WebSocket错误:", error);
     document.title = "连接错误 - 唠嗑岛 QQ2000";
     updateConnectionStatus("连接错误");
@@ -947,7 +990,7 @@ function handleMessage(message) {
 
 // 请求历史消息
 function requestHistory() {
-  if (ws && ws.readyState === WebSocket.OPEN) {
+  if (window.ws && window.ws.readyState === WebSocket.OPEN) {
     if (window.messageManager) {
       messageManager.addSystemMessage("正在加载历史消息...");
     }
@@ -958,7 +1001,7 @@ function requestHistory() {
         data: "request_history",
       },
     };
-    ws.send(JSON.stringify(historyMessage));
+    window.ws.send(JSON.stringify(historyMessage));
   }
 }
 
@@ -1012,14 +1055,14 @@ function setUserName() {
 
   if (!newUsername) {
     if (window.modalManager) {
-      modalManager.show("请输入用户名！");
+      modalManager.show("请输入用户名！", "提示", "⚠️");
     }
     return;
   }
 
   if (newUsername.length > 20) {
     if (window.modalManager) {
-      modalManager.show("用户名不能超过20个字符！");
+      modalManager.show("用户名不能超过20个字符！", "提示", "⚠️");
     }
     return;
   }
@@ -1035,7 +1078,7 @@ function setUserName() {
     logoutBtn.style.display = "block";
   }
 
-  if (ws && ws.readyState === WebSocket.OPEN) {
+  if (window.ws && window.ws.readyState === WebSocket.OPEN) {
     const enterMessage = {
       event: "enter_room",
       data: {
@@ -1043,7 +1086,7 @@ function setUserName() {
         data: "进入了聊天室",
       },
     };
-    ws.send(JSON.stringify(enterMessage));
+    window.ws.send(JSON.stringify(enterMessage));
   }
 
   if (window.messageManager) {
@@ -1062,23 +1105,17 @@ function sendMessage() {
   const messageText = messageInput.value.trim();
 
   if (!username) {
-    if (window.modalManager) {
-      modalManager.show("请先设置用户名！");
-    }
+    console.log("请先设置用户名！");
     return;
   }
 
   if (!messageText) {
-    if (window.modalManager) {
-      modalManager.show("请输入消息内容！");
-    }
+    console.log("请输入消息内容！");
     return;
   }
 
   if (messageText.length > maxChars) {
-    if (window.modalManager) {
-      modalManager.show(`消息长度不能超过${maxChars}个字符！`);
-    }
+    console.log(`消息长度不能超过${maxChars}个字符！`);
     return;
   }
 
@@ -1092,7 +1129,7 @@ function sendMessage() {
     },
   };
 
-  ws.send(JSON.stringify(chatMessage));
+  window.ws.send(JSON.stringify(chatMessage));
   messageInput.value = "";
   updateCharCount();
 }
@@ -1167,9 +1204,7 @@ function handleToolbarAction(action) {
       break;
     case "image":
       if (!window.username) {
-        if (window.modalManager) {
-          modalManager.show("请先登录！", "提示", "⚠️");
-        }
+        console.log("请先登录！");
         return;
       }
       if (
@@ -1178,13 +1213,7 @@ function handleToolbarAction(action) {
       ) {
         window.imageManager.selectImage();
       } else {
-        if (window.modalManager) {
-          modalManager.show(
-            "图片功能暂时不可用，请刷新页面重试",
-            "功能错误",
-            "❌",
-          );
-        }
+        console.log("图片功能暂时不可用，请刷新页面重试");
       }
       break;
     default:
@@ -1265,9 +1294,7 @@ function initializeResize() {
 // 退出登录
 function logout() {
   localStorage.removeItem(USER_NAME_KEY);
-  if (window.modalManager) {
-    modalManager.show("已退出登录，页面将刷新", "退出成功", "✅");
-  }
+  console.log("已退出登录，页面将刷新");
   setTimeout(() => {
     location.reload();
   }, 1500);
@@ -1324,6 +1351,14 @@ function closeWin98Modal() {
   }
 }
 
+// 测试弹窗功能
+function testModal() {
+  if (window.modalManager) {
+    console.log("测试弹窗功能...");
+    modalManager.show("这是一个测试弹窗", "测试", "🧪");
+  }
+}
+
 // 绑定所有事件
 function bindEvents() {
   const setNameButton = document.getElementById("setNameButton");
@@ -1375,11 +1410,8 @@ function bindEvents() {
       } else if (label === "最大化") {
         toggleMaximize();
       } else if (label === "关闭") {
-        if (window.modalManager) {
-          modalManager.confirm("确定要关闭QQ聊天窗口吗？", "QQ2000", () => {
-            window.close();
-          });
-        }
+        console.log("关闭窗口");
+        window.close();
       }
     });
   });
@@ -1471,6 +1503,30 @@ window.username = username;
 window.ws = ws;
 window.toggleGroup = toggleGroup;
 window.closeWin98Modal = closeWin98Modal;
+
+// 检查WebSocket状态的调试函数
+function checkWebSocketStatus() {
+  console.log("=== WebSocket状态检查 ===");
+  console.log("window.ws存在:", !!window.ws);
+  if (window.ws) {
+    console.log("WebSocket.readyState:", window.ws.readyState);
+    console.log(
+      "状态含义:",
+      {
+        0: "CONNECTING",
+        1: "OPEN",
+        2: "CLOSING",
+        3: "CLOSED",
+      }[window.ws.readyState],
+    );
+    console.log("WebSocket.url:", window.ws.url);
+  }
+  console.log("username:", window.username);
+  console.log("========================");
+}
+
+// 暴露到全局方便调试
+window.checkWebSocketStatus = checkWebSocketStatus;
 
 // DOM加载完成后初始化
 document.addEventListener("DOMContentLoaded", function () {
