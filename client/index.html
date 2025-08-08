@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Chat Dao - Real-time chat room supporting multi-user instant messaging with multiple theme options">
-    <meta name="keywords" content="chat room, real-time chat, online chat, instant messaging, multi-user chat">
-    <meta name="author" content="github.com/minorcell">
-    <title>Chat Dao - Real-time Online Chat Room</title>
+        content="唠嗑岛 - 支持多用户即时通讯的实时聊天室，提供多种主题选项">
+    <meta name="keywords" content="聊天室, 实时聊天, 在线聊天, 即时通讯, 多用户聊天">
+    <meta name="author" content="https://github.com/minorcell">
+    <link rel="icon" href="./public/qq.jpeg">
+    </link>
+    <title>唠嗑岛 - 实时在线聊天室</title>
     <link rel="stylesheet" href="./styles/retro.css" id="theme-style">
-    <!-- Markdown和代码高亮库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/index.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css" id="highlight-style">
@@ -19,37 +20,36 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Chat Dao</h1>
+            <h1>唠嗑岛</h1>
             <div class="header-controls">
                 <div class="online-info">
-                    <span>Online: </span>
+                    <span>在线人数: </span>
                     <span id="onlineCount">0</span>
                 </div>
                 <div class="theme-selector">
                     <select id="themeSelect">
-                        <option value="retro">Early Web</option>
-                        <option value="modern">Geek Style</option>
-                        <option value="chinese">Chinese Style</option>
+                        <option value="retro">早期网页</option>
+                        <option value="chinese">中国风</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="input-area">
-            <input type="text" id="nameInput" placeholder="Enter your nickname" maxlength="20">
-            <button id="setNameButton">Set Name</button>
+            <input type="text" id="nameInput" placeholder="请输入您的昵称" maxlength="20">
+            <button id="setNameButton">设置昵称</button>
         </div>
 
         <div class="chat-area">
             <div class="messages" id="messages">
                 <div class="system-message">
-                    <span class="timestamp">System Message</span>
-                    <span class="content">Welcome to Chat Dao Chat Room!</span>
+                    <span class="timestamp">系统消息</span>
+                    <span class="content">欢迎来到聊天道聊天室！</span>
                 </div>
             </div>
             <div class="input-area">
-                <textarea id="messageInput" placeholder="Type your message (Markdown supported)..." rows="3"></textarea>
-                <button id="sendButton">Send</button>
+                <textarea id="messageInput" placeholder="输入您的消息（支持Markdown）..." rows="3"></textarea>
+                <button id="sendButton">发送</button>
             </div>
         </div>
     </div>

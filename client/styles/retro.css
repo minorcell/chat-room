@@ -1,4 +1,3 @@
-/* 早期互联网风格样式 (2000年代初) */
 * {
     margin: 0;
     padding: 0;
@@ -276,20 +275,21 @@ body {
         font-size: 1.5rem;
         letter-spacing: 0;
     }
-    
+
     .input-area {
         flex-direction: column;
     }
-    
+
     .input-area button {
         width: 100%;
     }
-    
-    body, .container {
+
+    body,
+    .container {
         max-height: 100vh;
         height: 100vh;
     }
-    
+
     .messages {
         max-height: calc(100vh - 270px);
     }

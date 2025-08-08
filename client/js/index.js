@@ -1,37 +1,31 @@
-// WebSocket handling logic for retro-style chat room
 let ws;
 let username = '';
-let title = document.title;
 let currentTheme = 'retro';
 
-// 配置marked.js
 marked.setOptions({
-  highlight: function(code, lang) {
-    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-    try {
-      return hljs.highlight(code, { language }).value;
-    } catch (err) {
-      console.error('Highlight error:', err);
-      return code;
-    }
-  },
-  langPrefix: 'hljs language-',
-  // 启用表格渲染支持
-  gfm: true,
-  tables: true
+    highlight: function (code, lang) {
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        try {
+            return hljs.highlight(code, { language }).value;
+        } catch (err) {
+            console.error('高亮错误:', err);
+            return code;
+        }
+    },
+    langPrefix: 'hljs language-',
+    gfm: true,
+    tables: true
 });
 
-// Connect to WebSocket server
 function connect() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
     ws = new WebSocket(`${protocol}//${host}/ws`);
 
     ws.onopen = function (event) {
-        title = "Connected";
-        addSystemMessage('Successfully connected to the server');
-        
-        // 连接成功后请求历史消息
+        document.title = "已连接";
+        addSystemMessage('成功连接到服务器');
+
         requestHistory();
     };
 
@@ -41,18 +35,17 @@ function connect() {
     };
 
     ws.onclose = function (event) {
-        title = "Connection closed";
-        addSystemMessage('Disconnected from the server. Reconnecting...');
-        setTimeout(connect, 3000); // Reconnect after 3 seconds
+        document.title = "连接已关闭";
+        addSystemMessage('与服务器断开连接。正在重新连接...');
+        setTimeout(connect, 3000); // 3秒后重新连接
     };
 
     ws.onerror = function (error) {
-        title = "Connection error";
-        addSystemMessage('Connection error');
+        document.title = "连接错误";
+        addSystemMessage('连接发生错误');
     };
 }
 
-// 请求历史消息
 function requestHistory() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         const historyMessage = {
@@ -66,7 +59,7 @@ function requestHistory() {
     }
 }
 
-// Handle received messages
+// 处理接收到的消息
 function handleMessage(message) {
     switch (message.event) {
         case 'online_count':
@@ -79,11 +72,11 @@ function handleMessage(message) {
             addUserMessage(message);
             break;
         default:
-            title = 'unknown message type:';
+            title = '未知消息类型:';
     }
 }
 
-// Add system message
+// 添加系统消息
 function addSystemMessage(text) {
     const messagesDiv = document.getElementById('messages');
     const messageElement = document.createElement('div');
@@ -101,7 +94,7 @@ function addSystemMessage(text) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// Add user message
+// 添加用户消息
 function addUserMessage(message) {
     const messagesDiv = document.getElementById('messages');
     const messageElement = document.createElement('div');
@@ -123,8 +116,7 @@ function addUserMessage(message) {
 
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    
-    // 再次高亮代码块（以防marked.js的highlight选项未生效）
+
     messageElement.querySelectorAll('pre code').forEach((block) => {
         if (typeof hljs !== 'undefined') {
             hljs.highlightElement(block);
@@ -132,46 +124,42 @@ function addUserMessage(message) {
     });
 }
 
-// Set username
 function setUserName() {
     const nameInput = document.getElementById('nameInput');
 
     if (!nameInput.value.trim()) {
-        addSystemMessage('Please enter a username');
+        addSystemMessage('请输入用户名');
         return;
     }
 
     username = nameInput.value.trim();
-    addSystemMessage(`Username set to: ${username}`);
-    
-    // 用户设置名称后发送进入房间消息
+    addSystemMessage(`用户名已设置为: ${username}`);
+
     if (ws && ws.readyState === WebSocket.OPEN) {
         const enterMessage = {
             event: 'enter_room',
             data: {
                 name: username,
-                data: 'entered the chat room'
+                data: '进入了聊天室'
             }
         };
         ws.send(JSON.stringify(enterMessage));
     }
 }
 
-// Send message
 function sendMessage() {
     const messageInput = document.getElementById('messageInput');
 
     if (!username) {
-        addSystemMessage('Please set a username first');
+        addSystemMessage('请先设置用户名');
         return;
     }
 
     if (!messageInput.value.trim()) {
-        addSystemMessage('Please enter a message');
+        addSystemMessage('请输入消息内容');
         return;
     }
 
-    // Send chat message
     const chatMessage = {
         event: 'chat_text',
         data: {
@@ -184,17 +172,11 @@ function sendMessage() {
     messageInput.value = '';
 }
 
-// Switch theme
 function switchTheme(theme) {
     const themeStyle = document.getElementById('theme-style');
     const highlightStyle = document.getElementById('highlight-style');
 
     switch (theme) {
-        case 'modern':
-            themeStyle.href = './styles/modern.css';
-            // 根据主题切换代码高亮样式
-            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/github-dark.css';
-            break;
         case 'chinese':
             themeStyle.href = './styles/chinese.css';
             // 根据主题切换代码高亮样式
@@ -210,16 +192,13 @@ function switchTheme(theme) {
     localStorage.setItem('chatDaoTheme', theme);
 }
 
-// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function () {
-    // Check for saved theme in localStorage
     const savedTheme = localStorage.getItem('chatDaoTheme') || 'retro';
     if (savedTheme !== currentTheme) {
         switchTheme(savedTheme);
         document.getElementById('themeSelect').value = savedTheme;
     }
 
-    // 确保hljs库加载完成后再连接WebSocket
     setTimeout(() => {
         connect();
     }, 100);
@@ -237,7 +216,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     messageInput.addEventListener('keypress', function (e) {
-        // 修改为Ctrl+Enter发送消息，以便用户可以在textarea中按Enter换行
         if (e.key === 'Enter' && e.ctrlKey) {
             sendMessage();
         }

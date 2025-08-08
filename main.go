@@ -94,7 +94,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-// 获取环境变量，如果不存在则使用默认值
 func getEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -111,7 +110,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	conns[conn] = true
 
-	// 发送当前在线人数
 	broadcastOnlineCount()
 
 	defer func() {
