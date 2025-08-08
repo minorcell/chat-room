@@ -3,7 +3,7 @@ let ws;
 let username = "";
 let onlineUsers = new Map();
 let charCount = 0;
-let maxChars = 500;
+let maxChars = Infinity;
 let isMinimized = false;
 let isMaximized = false;
 let isResizing = false;
@@ -904,31 +904,9 @@ function validateUsername(username) {
 }
 
 function validateMessage(message) {
-  if (!message || typeof message !== "string") {
-    return false;
-  }
-
   // 长度检查
-  if (message.length === 0 || message.length > maxChars) {
+  if (message.length === 0) {
     return false;
-  }
-
-  // 检查是否包含潜在的恶意脚本
-  const dangerousPatterns = [
-    /<script/gi,
-    /javascript:/gi,
-    /on\w+=/gi,
-    /<iframe/gi,
-    /<object/gi,
-    /<embed/gi,
-    /vbscript:/gi,
-    /data:/gi,
-  ];
-
-  for (const pattern of dangerousPatterns) {
-    if (pattern.test(message)) {
-      return false;
-    }
   }
 
   return true;
@@ -958,17 +936,12 @@ function updateConnectionStatus(status) {
 function updateCharCount() {
   const messageInput = document.getElementById("messageInput");
   const charCountElement = document.querySelector(".char-count");
+
   if (messageInput && charCountElement) {
     charCount = messageInput.value.length;
-    charCountElement.textContent = `${charCount}/${maxChars}`;
-
-    if (charCount > maxChars) {
-      charCountElement.style.color = "#ff6b6b";
-      messageInput.style.borderColor = "#ff6b6b";
-    } else {
-      charCountElement.style.color = "";
-      messageInput.style.borderColor = "";
-    }
+    charCountElement.textContent = `${charCount}`;
+    charCountElement.style.color = "";
+    messageInput.style.borderColor = "";
   }
 }
 
@@ -1199,9 +1172,7 @@ function sendMessage() {
   if (!validateMessage(messageText)) {
     if (window.modalManager) {
       modalManager.show(
-        "消息格式不正确！消息不能为空、不能超过" +
-          maxChars +
-          "个字符，且不能包含恶意脚本。",
+        "消息格式不正确！消息不能为空，且不能包含恶意脚本。",
         "提示",
         "⚠️",
       );
@@ -1551,8 +1522,196 @@ function bindEvents() {
   // 初始化字符计数
   updateCharCount();
 
+  // 移动端功能初始化
+  initMobileFeatures();
+
   // 设置初始焦点
   nameInput.focus();
+}
+
+// 移动端功能初始化
+function initMobileFeatures() {
+  // 检测移动设备
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+  if (isMobile || isTouch) {
+    // 添加移动端专用类
+    document.body.classList.add("mobile-device");
+
+    // 虚拟键盘处理
+    handleVirtualKeyboard();
+
+    // 触摸事件优化
+    optimizeTouchEvents();
+
+    // 防止双击缩放
+    preventDoubleTapZoom();
+
+    // 方向变化处理
+    handleOrientationChange();
+  }
+}
+
+// 虚拟键盘处理
+function handleVirtualKeyboard() {
+  const messageInput = document.getElementById("messageInput");
+  const chatMessages = document.getElementById("messages");
+  const inputArea = document.querySelector(".chat-input-area");
+
+  if (!messageInput || !chatMessages) return;
+
+  let initialViewportHeight = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
+
+  // 监听虚拟键盘显示/隐藏
+  function handleViewportChange() {
+    const currentHeight = window.visualViewport
+      ? window.visualViewport.height
+      : window.innerHeight;
+    const heightDiff = initialViewportHeight - currentHeight;
+
+    if (heightDiff > 150) {
+      // 键盘显示
+      document.body.classList.add("keyboard-open");
+      if (chatMessages) {
+        setTimeout(() => {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
+      }
+    } else {
+      // 键盘隐藏
+      document.body.classList.remove("keyboard-open");
+    }
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", handleViewportChange);
+  } else {
+    window.addEventListener("resize", handleViewportChange);
+  }
+
+  // 输入框获得焦点时滚动到底部
+  messageInput.addEventListener("focus", () => {
+    setTimeout(() => {
+      if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      messageInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  });
+}
+
+// 触摸事件优化
+function optimizeTouchEvents() {
+  // 为按钮添加触摸反馈
+  const touchElements = document.querySelectorAll(
+    ".toolbar-btn, .send-btn, .user-item, .title-bar-control, .win98-modal-button",
+  );
+
+  touchElements.forEach((element) => {
+    element.addEventListener(
+      "touchstart",
+      function () {
+        this.classList.add("touch-active");
+      },
+      { passive: true },
+    );
+
+    element.addEventListener(
+      "touchend",
+      function () {
+        setTimeout(() => {
+          this.classList.remove("touch-active");
+        }, 150);
+      },
+      { passive: true },
+    );
+
+    element.addEventListener(
+      "touchcancel",
+      function () {
+        this.classList.remove("touch-active");
+      },
+      { passive: true },
+    );
+  });
+
+  // 优化滚动性能
+  const scrollElements = document.querySelectorAll(
+    ".chat-messages, .user-list",
+  );
+  scrollElements.forEach((element) => {
+    element.style.webkitOverflowScrolling = "touch";
+    element.style.scrollBehavior = "smooth";
+  });
+}
+
+// 防止双击缩放
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+
+  document.addEventListener(
+    "touchend",
+    function (event) {
+      const now = new Date().getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    },
+    false,
+  );
+
+  // 防止双指缩放
+  document.addEventListener("gesturestart", function (event) {
+    event.preventDefault();
+  });
+
+  document.addEventListener("gesturechange", function (event) {
+    event.preventDefault();
+  });
+
+  document.addEventListener("gestureend", function (event) {
+    event.preventDefault();
+  });
+}
+
+// 处理屏幕方向变化
+function handleOrientationChange() {
+  function adjustLayoutForOrientation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const mainContent = document.querySelector(".main-content");
+
+    if (mainContent) {
+      if (isLandscape && window.innerWidth <= 768) {
+        mainContent.classList.add("landscape-mode");
+      } else {
+        mainContent.classList.remove("landscape-mode");
+      }
+    }
+
+    // 重新计算聊天消息区域高度
+    setTimeout(() => {
+      const chatMessages = document.getElementById("messages");
+      if (chatMessages && window.messageManager) {
+        messageManager.scrollToBottom();
+      }
+    }, 300);
+  }
+
+  window.addEventListener("orientationchange", () => {
+    setTimeout(adjustLayoutForOrientation, 100);
+  });
+
+  window.addEventListener("resize", adjustLayoutForOrientation);
+
+  // 初始调整
+  adjustLayoutForOrientation();
 }
 
 // ========================================

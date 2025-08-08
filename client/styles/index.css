@@ -98,10 +98,10 @@ body {
 /* QQ主窗口 */
 .qq-window {
     width: 100%;
-    max-width: 1000px;
+    max-width: 100%;
     min-width: 800px;
     height: calc(100vh - 20px);
-    margin: 10px auto;
+    margin: 0 auto;
     background: var(--window-bg);
     border: 2px outset var(--window-bg);
     display: flex;
@@ -725,48 +725,713 @@ body {
     color: #ee0000;
 }
 
-/* 响应式设计 */
-@media (max-width: 600px) {
-    body {
-        padding: 4px;
-    }
+/* 移动端特定样式 */
+.mobile-device .touch-active {
+    background-color: var(--button-pressed) !important;
+    transform: scale(0.98);
+    transition: all 0.1s ease;
+}
 
+.keyboard-open .chat-messages {
+    max-height: 40vh;
+}
+
+.keyboard-open .chat-input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--window-bg);
+    border-top: 2px outset var(--window-bg);
+}
+
+.landscape-mode {
+    flex-direction: row !important;
+}
+
+.landscape-mode .user-panel {
+    width: 200px !important;
+    height: auto !important;
+    max-height: none !important;
+    border-right: 2px inset var(--window-bg) !important;
+    border-bottom: none !important;
+    order: 1 !important;
+}
+
+.landscape-mode .chat-panel {
+    order: 2 !important;
+    flex: 1 !important;
+}
+
+/* 防止文本选择在触摸设备上 */
+.mobile-device .toolbar-btn,
+.mobile-device .send-btn,
+.mobile-device .user-item,
+.mobile-device .title-bar-control {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* 优化触摸目标大小 */
+.mobile-device .toolbar-btn,
+.mobile-device .send-btn,
+.mobile-device .title-bar-control {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* 响应式设计 */
+/* 平板设备 */
+@media (max-width: 1024px) {
     .qq-window {
-        height: calc(100vh - 8px);
-        margin: 4px auto;
-        max-width: 100%;
+        min-width: 600px;
+        max-width: 95%;
+        margin: 5px auto;
     }
 
     .user-panel {
-        width: 160px;
+        width: 200px;
+    }
+
+    .toolbar-btn {
+        padding: 6px 8px;
+        min-height: 32px;
+    }
+
+    .input-box textarea {
+        min-height: 60px;
+        font-size: 14px;
+    }
+
+    .send-btn {
+        min-height: 40px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* 小屏幕平板和大屏手机 */
+@media (max-width: 768px) {
+    body {
+        padding: 2px;
+        font-size: 14px;
+    }
+
+    .qq-window {
+        min-width: unset;
+        width: calc(100vw - 4px);
+        height: calc(100vh - 4px);
+        margin: 2px auto;
+        border: 1px outset var(--window-bg);
+    }
+
+    .title-bar {
+        height: 32px;
+        padding: 0 8px;
+        touch-action: none;
+    }
+
+    .title-bar-text {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .title-bar-control {
+        width: 32px;
+        height: 28px;
+        margin: 2px 1px;
+        font-size: 14px;
     }
 
     .main-content {
-        margin: 1px;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .user-panel {
+        width: 100%;
+        height: auto;
+        max-height: 30vh;
+        border-right: none;
+        border-bottom: 2px inset var(--window-bg);
+        order: 2;
+    }
+
+    .user-panel-header {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    .user-list {
+        max-height: 25vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .user-item {
+        padding: 8px 12px;
+        font-size: 14px;
+        min-height: 40px;
+        touch-action: manipulation;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    .chat-panel {
+        flex: 1;
+        order: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .chat-header {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    .chat-messages {
+        flex: 1;
+        min-height: 0;
+        padding: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .message {
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    .message-header {
+        margin-bottom: 6px;
+    }
+
+    .username {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .timestamp {
+        font-size: 12px;
+    }
+
+    .content {
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .chat-input-area {
+        height: auto;
+        min-height: 120px;
+        padding: 8px;
+    }
+
+    .input-toolbar {
+        padding: 6px 0;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .toolbar-btn {
+        padding: 8px 12px;
+        min-height: 40px;
+        min-width: 40px;
+        font-size: 14px;
+        touch-action: manipulation;
     }
 
     .input-box {
         flex-direction: column;
-        gap: 2px;
+        gap: 8px;
+        margin: 8px 0;
+    }
+
+    .input-box textarea {
+        min-height: 80px;
+        font-size: 16px;
+        padding: 12px;
+        border: 2px inset var(--window-bg);
+        line-height: 1.4;
+        resize: vertical;
     }
 
     .input-controls {
         flex-direction: row;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
     }
 
     .send-btn {
-        width: 80px;
+        min-height: 44px;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        touch-action: manipulation;
+        flex-shrink: 0;
+    }
+
+    .char-count {
+        font-size: 12px;
+        order: -1;
+    }
+
+    .status-bar {
+        height: 32px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    /* 模态框适配 */
+    .win98-modal-dialog {
+        width: 90%;
+        max-width: 400px;
+        margin: 20px;
+    }
+
+    .win98-modal-title-bar {
+        height: 32px;
+        padding: 0 8px;
+    }
+
+    .win98-modal-close {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .win98-modal-content {
+        padding: 16px;
+        font-size: 14px;
+    }
+
+    .win98-modal-button {
+        min-height: 40px;
+        padding: 8px 16px;
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    /* 图片预览适配 */
+    .image-preview-modal {
+        padding: 20px;
+    }
+
+    .image-preview-content {
+        max-width: 90%;
+        max-height: 80%;
+    }
+
+    .image-preview-close {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        touch-action: manipulation;
+    }
+
+    .message-image {
+        max-width: 100%;
+        max-height: 200px;
+        touch-action: manipulation;
+    }
+
+    /* 隐藏调整手柄 */
+    .resize-handle {
+        display: none;
+    }
+
+    /* 用户输入区域适配 */
+    .user-input-area {
+        padding: 12px;
+    }
+
+    .user-input-area input {
+        height: 40px;
+        font-size: 16px;
+        padding: 8px 12px;
+    }
+
+    .user-input-area button {
+        height: 44px;
+        padding: 10px 16px;
+        font-size: 14px;
+        touch-action: manipulation;
+    }
+
+    /* 表情面板适配 */
+    .emoji-grid {
+        padding: 8px;
+        gap: 4px;
+    }
+
+    .emoji-item {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        touch-action: manipulation;
+    }
+
+    /* 右键菜单适配 */
+    .context-menu {
+        font-size: 14px;
+        min-width: 150px;
+    }
+
+    .context-menu-item {
+        padding: 12px 16px;
+        touch-action: manipulation;
+    }
+}
+
+/* 手机竖屏 */
+@media (max-width: 480px) {
+    .qq-window {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+    }
+
+    .title-bar {
+        height: 44px;
+        padding: 0 16px;
+    }
+
+    .title-bar-text {
+        font-size: 16px;
+    }
+
+    .title-bar-control {
+        width: 40px;
+        height: 36px;
+        font-size: 16px;
+    }
+
+    .user-panel {
+        max-height: 35vh;
     }
 
     .user-panel-header {
-        font-size: 11px;
-        padding: 0 4px;
+        height: 44px;
+        padding: 0 16px;
+        font-size: 16px;
+    }
+
+    .user-item {
+        padding: 12px 16px;
+        min-height: 48px;
+        font-size: 15px;
     }
 
     .chat-header {
-        font-size: 11px;
-        padding: 0 4px;
+        height: 44px;
+        padding: 0 16px;
+        font-size: 16px;
+    }
+
+    .chat-messages {
+        padding: 12px 16px;
+    }
+
+    .message {
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+
+    .username {
+        font-size: 15px;
+    }
+
+    .content {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .chat-input-area {
+        padding: 12px 16px;
+        min-height: 140px;
+    }
+
+    .toolbar-btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .input-box textarea {
+        min-height: 100px;
+        font-size: 16px;
+        padding: 16px;
+    }
+
+    .send-btn {
+        min-height: 48px;
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    .status-bar {
+        height: 36px;
+        padding: 0 16px;
+        font-size: 13px;
+    }
+
+    /* 用户输入区域 */
+    .user-input-area {
+        padding: 16px;
+    }
+
+    .user-input-area input {
+        height: 48px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+
+    .user-input-area button {
+        height: 48px;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    /* 模态框 */
+    .win98-modal-dialog {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .win98-modal-title-bar {
+        height: 44px;
+        padding: 0 16px;
+        font-size: 16px;
+    }
+
+    .win98-modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .win98-modal-content {
+        padding: 20px;
+        font-size: 15px;
+    }
+
+    .win98-modal-button {
+        min-height: 48px;
+        padding: 12px 20px;
+        font-size: 16px;
+        margin: 4px;
+    }
+
+    /* 表情面板 */
+    .emoji-item {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+
+    /* 图片消息 */
+    .message-image {
+        max-height: 160px;
+    }
+
+    .image-preview-close {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+}
+
+/* 超小屏幕 */
+@media (max-width: 320px) {
+    .title-bar {
+        height: 40px;
+        padding: 0 12px;
+    }
+
+    .title-bar-text {
+        font-size: 14px;
+    }
+
+    .user-panel-header,
+    .chat-header {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 14px;
+    }
+
+    .input-box textarea {
+        min-height: 80px;
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .send-btn {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 15px;
+    }
+
+    .toolbar-btn {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+/* 横屏手机适配 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .qq-window {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .main-content {
+        flex-direction: row;
+    }
+
+    .user-panel {
+        width: 200px;
+        height: auto;
+        max-height: none;
+        border-right: 2px inset var(--window-bg);
+        border-bottom: none;
+        order: 1;
+    }
+
+    .chat-panel {
+        order: 2;
+        flex: 1;
+    }
+
+    .user-list {
+        max-height: none;
+        flex: 1;
+    }
+
+    .chat-input-area {
+        min-height: 100px;
+    }
+
+    .input-box textarea {
+        min-height: 60px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .toolbar-btn,
+    .send-btn,
+    .user-item,
+    .title-bar-control,
+    .win98-modal-button,
+    .context-menu-item,
+    .emoji-item {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .toolbar-btn:active,
+    .send-btn:active,
+    .title-bar-control:active,
+    .win98-modal-button:active {
+        transform: translateY(1px);
+        transition: transform 0.1s ease;
+    }
+
+    /* 滚动区域优化 */
+    .chat-messages,
+    .user-list {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    /* 输入框优化 */
+    .input-box textarea,
+    .user-input-area input {
+        -webkit-appearance: none;
+        border-radius: 0;
+        /* 防止iOS自动缩放 */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+
+    /* 防止缩放 */
+    input[type="text"],
+    textarea {
+        font-size: 16px;
+        /* 防止iOS双击缩放 */
+        touch-action: manipulation;
+    }
+
+    /* 移动端虚拟键盘适配 */
+    .keyboard-open .qq-window {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .keyboard-open .main-content {
+        height: auto;
+        flex: 1;
+    }
+
+    .keyboard-open .chat-panel {
+        height: auto;
+        min-height: 40vh;
+    }
+
+    /* 触摸反馈增强 */
+    .touch-active {
+        background-color: var(--button-pressed) !important;
+        border: 2px inset var(--button-pressed) !important;
+    }
+}
+
+/* 高分辨率屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .mobile-device .message-image,
+    .mobile-device .user-avatar {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* 减少动画的首选项 */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-device * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+    .mobile-device ::-webkit-scrollbar-thumb {
+        background-color: #555;
+    }
+
+    .mobile-device ::-webkit-scrollbar-track {
+        background-color: #222;
     }
 }
 
