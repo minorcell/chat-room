@@ -785,7 +785,7 @@ class ImageManager {
         name: window.username,
         type: "image",
         data: imageData,
-        fileName: fileName,
+        fileName: sanitizeInput(fileName),
         messageId: messageId,
       },
     };
@@ -854,6 +854,84 @@ class ImageManager {
 // 工具函数
 function getEnv(key, defaultValue) {
   return defaultValue;
+}
+
+// XSS过滤和输入验证函数
+function sanitizeInput(input) {
+  if (typeof input !== "string") {
+    return input;
+  }
+
+  // HTML实体转义
+  const div = document.createElement("div");
+  div.textContent = input;
+  let sanitized = div.innerHTML;
+
+  // 移除潜在的危险字符和模式
+  sanitized = sanitized
+    .replace(/[<>]/g, "") // 移除尖括号
+    .replace(/javascript:/gi, "") // 移除javascript:协议
+    .replace(/on\w+=/gi, "") // 移除事件处理器
+    .replace(/&lt;script&gt;/gi, "") // 移除脚本标签
+    .replace(/&lt;\/script&gt;/gi, "")
+    .trim();
+
+  return sanitized;
+}
+
+function validateUsername(username) {
+  if (!username || typeof username !== "string") {
+    return false;
+  }
+
+  // 长度检查
+  if (username.length === 0 || username.length > 20) {
+    return false;
+  }
+
+  // 不允许特殊字符，只允许中文、英文、数字和常见符号
+  const validPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_\-\s]+$/;
+  if (!validPattern.test(username)) {
+    return false;
+  }
+
+  // 不允许纯空格或特殊字符串
+  if (username.trim().length === 0) {
+    return false;
+  }
+
+  return true;
+}
+
+function validateMessage(message) {
+  if (!message || typeof message !== "string") {
+    return false;
+  }
+
+  // 长度检查
+  if (message.length === 0 || message.length > maxChars) {
+    return false;
+  }
+
+  // 检查是否包含潜在的恶意脚本
+  const dangerousPatterns = [
+    /<script/gi,
+    /javascript:/gi,
+    /on\w+=/gi,
+    /<iframe/gi,
+    /<object/gi,
+    /<embed/gi,
+    /vbscript:/gi,
+    /data:/gi,
+  ];
+
+  for (const pattern of dangerousPatterns) {
+    if (pattern.test(message)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function updateTime() {
@@ -1060,14 +1138,18 @@ function setUserName() {
     return;
   }
 
-  if (newUsername.length > 20) {
+  if (!validateUsername(newUsername)) {
     if (window.modalManager) {
-      modalManager.show("用户名不能超过20个字符！", "提示", "⚠️");
+      modalManager.show(
+        "用户名格式不正确！用户名不能超过20个字符，且不能包含特殊字符。",
+        "提示",
+        "⚠️",
+      );
     }
     return;
   }
 
-  username = newUsername;
+  username = sanitizeInput(newUsername);
   window.username = username;
   localStorage.setItem(USER_NAME_KEY, username);
 
@@ -1083,7 +1165,7 @@ function setUserName() {
       event: "enter_room",
       data: {
         name: username,
-        data: "进入了聊天室",
+        data: sanitizeInput("进入了聊天室"),
       },
     };
     window.ws.send(JSON.stringify(enterMessage));
@@ -1114,8 +1196,16 @@ function sendMessage() {
     return;
   }
 
-  if (messageText.length > maxChars) {
-    console.log(`消息长度不能超过${maxChars}个字符！`);
+  if (!validateMessage(messageText)) {
+    if (window.modalManager) {
+      modalManager.show(
+        "消息格式不正确！消息不能为空、不能超过" +
+          maxChars +
+          "个字符，且不能包含恶意脚本。",
+        "提示",
+        "⚠️",
+      );
+    }
     return;
   }
 
@@ -1124,7 +1214,7 @@ function sendMessage() {
     event: "chat_text",
     data: {
       name: username,
-      data: messageText,
+      data: sanitizeInput(messageText),
       messageId: messageId,
     },
   };

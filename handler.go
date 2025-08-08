@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/websocket"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +46,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Printf("收到来自 %s 的消息: %+v\n", conn.RemoteAddr(), message)
+		log.Printf("收到来自 %s 的消息: %s\n", conn.RemoteAddr(), getLogSafeMessage(message))
+
+		// 对消息进行XSS过滤
+		message = sanitizeMessage(message)
 
 		switch message.Event {
 		case EnterRoom:
@@ -110,7 +116,7 @@ func cacheMessage(message Message) {
 		return
 	}
 
-	log.Printf("消息已缓存: %s", messageBytes)
+	log.Printf("消息已缓存: %s", getLogSafeMessage(message))
 }
 
 // 发送历史消息给指定连接
@@ -219,4 +225,55 @@ func removeMessageFromCache(messageID string) {
 	}
 
 	log.Printf("已从缓存中移除消息: %s，原消息数: %d，过滤后消息数: %d", messageID, len(history), len(filteredMessages))
+}
+
+// 获取日志安全的消息字符串，避免打印图片二进制数据
+func getLogSafeMessage(message Message) string {
+	switch message.Event {
+	case ChatImage, ChatPhoto:
+		// 对于图片消息，只记录基本信息，不记录图片数据
+		return fmt.Sprintf("Event: %s, User: %s, Type: %s, FileName: %s, MessageID: %s",
+			message.Event,
+			message.UserData.Name,
+			message.UserData.Type,
+			message.UserData.FileName,
+			message.UserData.MessageID)
+	default:
+		// 对于其他消息，正常记录，但限制长度
+		messageStr := fmt.Sprintf("%+v", message)
+		if len(messageStr) > 500 {
+			return messageStr[:500] + "..."
+		}
+		return messageStr
+	}
+}
+
+// 创建一个严格的HTML清理策略
+var strictPolicy = bluemonday.StrictPolicy()
+
+// XSS过滤函数
+func sanitizeMessage(message Message) Message {
+	// 过滤用户名
+	message.UserData.Name = strictPolicy.Sanitize(strings.TrimSpace(message.UserData.Name))
+
+	// 过滤文件名
+	if message.UserData.FileName != "" {
+		message.UserData.FileName = strictPolicy.Sanitize(strings.TrimSpace(message.UserData.FileName))
+	}
+
+	// 对于文本消息，过滤内容
+	if message.Event == ChatText {
+		if dataStr, ok := message.UserData.Data.(string); ok {
+			message.UserData.Data = strictPolicy.Sanitize(strings.TrimSpace(dataStr))
+		}
+	}
+
+	// 对于进入和离开房间消息，也过滤数据内容
+	if message.Event == EnterRoom || message.Event == LeaveRoom {
+		if dataStr, ok := message.UserData.Data.(string); ok {
+			message.UserData.Data = strictPolicy.Sanitize(strings.TrimSpace(dataStr))
+		}
+	}
+
+	return message
 }
