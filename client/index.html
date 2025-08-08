@@ -1,104 +1,274 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="唠嗑岛 - Win98风格QQ聊天室，支持多用户即时通讯"
+        />
+        <meta
+            name="keywords"
+            content="QQ聊天室, Win98, 实时聊天, 在线聊天, 即时通讯, 多用户聊天, 复古界面"
+        />
+        <meta name="author" content="https://github.com/minorcell" />
+        <link rel="icon" href="./public/qq.jpeg" />
+        <title>QQ2000 - 唠嗑岛聊天室</title>
+        <link rel="stylesheet" href="./styles/index.css" id="theme-style" />
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/index.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css"
+            id="highlight-style"
+        />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="唠嗑岛 - 支持多用户即时通讯的实时聊天室，提供多种主题选项">
-    <meta name="keywords" content="聊天室, 实时聊天, 在线聊天, 即时通讯, 多用户聊天">
-    <meta name="author" content="https://github.com/minorcell">
-    <link rel="icon" href="./public/qq.jpeg">
-    </link>
-    <title>唠嗑岛 - 实时在线聊天室</title>
-    <link rel="stylesheet" href="./styles/index.css" id="theme-style">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/index.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css" id="highlight-style">
-</head>
-
-<body>
-    <div class="qq-window">
-        <!-- QQ标题栏 -->
-        <div class="title-bar">
-            <div class="title-bar-text">
-                <img src="./public/qq.jpeg" alt="QQ" class="qq-icon">
-                唠嗑岛 - QQ2000
+    <body>
+        <div class="qq-window">
+            <!-- QQ标题栏 -->
+            <div class="title-bar">
+                <div class="title-bar-text">
+                    <img src="./public/qq.jpeg" alt="QQ" class="qq-icon" />
+                    腾讯QQ2000 - 唠嗑岛
+                </div>
+                <div class="title-bar-controls">
+                    <button
+                        class="title-bar-control"
+                        type="button"
+                        aria-label="最小化"
+                        title="最小化"
+                    ></button>
+                    <button
+                        class="title-bar-control"
+                        type="button"
+                        aria-label="最大化"
+                        title="最大化"
+                    ></button>
+                    <button
+                        class="title-bar-control close"
+                        type="button"
+                        aria-label="关闭"
+                        title="关闭"
+                    ></button>
+                </div>
             </div>
-            <div class="title-bar-controls">
-                <button class="title-bar-control" type="button" aria-label="最小化"></button>
-                <button class="title-bar-control" type="button" aria-label="最大化"></button>
-                <button class="title-bar-control close" type="button" aria-label="关闭"></button>
+
+            <!-- QQ菜单栏 -->
+            <div class="menu-bar">
+                <div class="menu-item">Github</div>
+                <div class="menu-item" id="logoutBtn" style="display: none">
+                    退出登录
+                </div>
+                <div class="menu-item">
+                    主题：
+                    <select id="themeSelector" class="theme-select">
+                        <option value="default">经典灰</option>
+                        <option value="blue">复古蓝</option>
+                        <option value="green">经典绿</option>
+                        <option value="purple">优雅紫</option>
+                        <option value="gold">怀旧金</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 主体内容区域 -->
+            <div class="main-content">
+                <!-- 左侧用户列表 -->
+                <div class="user-panel">
+                    <div class="user-panel-header">
+                        <span class="panel-title">我的好友</span>
+                        <span class="online-count"
+                            >在线(<span id="onlineCount">0</span>)</span
+                        >
+                    </div>
+
+                    <!-- 用户状态选择 -->
+                    <div class="status-selector">
+                        <div class="status-item active">
+                            <span class="status-icon">●</span>
+                            <span class="status-text">我在线上</span>
+                        </div>
+                    </div>
+
+                    <div class="user-list" id="userList">
+                        <div class="user-group">
+                            <div
+                                class="group-header"
+                                onclick="toggleGroup(this)"
+                            >
+                                <span class="group-icon">-</span>
+                                <span class="group-name">💬 聊天室用户</span>
+                                <span class="group-count"
+                                    >(<span id="groupCount">0</span>)</span
+                                >
+                            </div>
+                            <div class="group-users" id="groupUsers">
+                                <!-- 用户将动态添加到这里 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 用户信息输入区域 -->
+                    <div
+                        class="user-input-area"
+                        id="userInputArea"
+                        style="display: none"
+                    >
+                        <div class="input-label">昵称设置：</div>
+                        <div class="input-row">
+                            <input
+                                type="text"
+                                id="nameInput"
+                                placeholder="请输入您的昵称"
+                                maxlength="20"
+                            />
+                            <button id="setNameButton">登录</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧聊天区域 -->
+                <div class="chat-panel">
+                    <div class="chat-header">
+                        <div class="chat-title">
+                            <span class="chat-icon">💬</span>
+                            <span class="chat-text">群聊 - 唠嗑岛聊天室</span>
+                        </div>
+                        <div class="chat-controls">
+                            <button class="header-btn" title="聊天记录">
+                                📜
+                            </button>
+                            <button class="header-btn" title="群设置">
+                                ⚙️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="messages">
+                        <div class="welcome-message">
+                            <div class="welcome-header">
+                                🎉 欢迎使用QQ2000聊天室 🎉
+                            </div>
+                            <div class="welcome-content">
+                                <p>• 支持Markdown格式文本</p>
+                                <p>• 实时多用户在线聊天</p>
+                                <p>• 经典Win98界面风格</p>
+                                <p>请先在左侧设置您的昵称，然后开始聊天吧！</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-toolbar">
+                            <button
+                                class="toolbar-btn"
+                                title="发送表情"
+                                data-action="emoji"
+                            >
+                                😊
+                            </button>
+                            <button
+                                class="toolbar-btn"
+                                title="发送图片"
+                                data-action="image"
+                            >
+                                🖼️
+                            </button>
+                            <div class="toolbar-separator"></div>
+                            <button
+                                class="toolbar-btn"
+                                title="消息记录"
+                                data-action="history"
+                            >
+                                📖
+                            </button>
+                        </div>
+                        <div class="input-box">
+                            <textarea
+                                id="messageInput"
+                                placeholder="请在这里输入消息，支持Markdown格式。按Ctrl+Enter发送消息..."
+                                rows="4"
+                            ></textarea>
+                            <div class="resize-handle" id="resizeHandle"></div>
+                            <div class="input-controls">
+                                <div class="input-status">
+                                    <span class="char-count">0/500</span>
+                                </div>
+                                <button id="sendButton" class="send-btn">
+                                    发送(S)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部状态栏 -->
+            <div class="status-bar">
+                <div class="status-left">
+                    <span class="status-icon">●</span>
+                    <span id="connectionStatus">已连接</span>
+                    <span class="status-separator">|</span>
+                    <span class="server-info">服务器: chat.mcell.top</span>
+                </div>
+                <div class="status-center">
+                    <span class="version-info">QQ2000 Build 1022</span>
+                </div>
+                <div class="status-right">
+                    <span class="status-time" id="currentTime"></span>
+                </div>
             </div>
         </div>
 
-        <!-- 主体内容区域 -->
-        <div class="main-content">
-            <!-- 左侧用户列表 -->
-            <div class="user-panel">
-                <div class="user-panel-header">
-                    <span>我的好友</span>
-                    <span class="online-count">在线 <span id="onlineCount">0</span></span>
-                </div>
-                <div class="user-list" id="userList">
-                    <div class="user-group">
-                        <div class="group-header">
-                            <span class="group-icon">▼</span>
-                            <span class="group-name">聊天室用户</span>
-                        </div>
-                        <div class="group-users" id="groupUsers">
-                            <!-- 用户将动态添加到这里 -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 用户信息输入区域 -->
-                <div class="user-input-area">
-                    <input type="text" id="nameInput" placeholder="请输入您的昵称" maxlength="20">
-                    <button id="setNameButton">登录</button>
-                </div>
-            </div>
-
-            <!-- 右侧聊天区域 -->
-            <div class="chat-panel">
-                <div class="chat-header">
-                    <span class="chat-title">群聊 - 唠嗑岛聊天室</span>
-                </div>
-
-                <div class="chat-messages" id="messages">
-                    <div class="system-message">
-                        <span class="timestamp">系统消息</span>
-                        <span class="content">欢迎来到唠嗑岛聊天室！</span>
-                    </div>
-                </div>
-
-                <div class="chat-input-area">
-                    <div class="input-toolbar">
-                        <button class="toolbar-btn" title="发送表情">😊</button>
-                        <button class="toolbar-btn" title="发送图片">🖼️</button>
-                        <button class="toolbar-btn" title="发送文件">📎</button>
-                    </div>
-                    <div class="input-box">
-                        <textarea id="messageInput" placeholder="输入您的消息（支持Markdown）..." rows="3"></textarea>
-                        <div class="input-controls">
-                            <button id="sendButton" class="send-btn">发送</button>
-                        </div>
-                    </div>
+        <!-- 表情对话框 -->
+        <div id="emojiDialog" class="dialog" style="display: none">
+            <div class="dialog-header">选择表情</div>
+            <div class="dialog-content">
+                <div class="emoji-grid">
+                    <span class="emoji-item">😊</span>
+                    <span class="emoji-item">😂</span>
+                    <span class="emoji-item">😍</span>
+                    <span class="emoji-item">🤔</span>
+                    <span class="emoji-item">😎</span>
+                    <span class="emoji-item">😢</span>
+                    <span class="emoji-item">😡</span>
+                    <span class="emoji-item">👍</span>
                 </div>
             </div>
         </div>
 
-        <!-- 底部状态栏 -->
-        <div class="status-bar">
-            <div class="status-left">
-                <span id="connectionStatus">已连接</span>
-            </div>
-            <div class="status-right">
-                <span class="status-time" id="currentTime"></span>
+        <!-- Win98风格消息弹窗 -->
+        <div id="win98Modal" class="win98-modal">
+            <div class="win98-modal-dialog">
+                <div class="win98-modal-title-bar">
+                    <div class="win98-modal-title">
+                        <div class="win98-modal-icon">!</div>
+                        <span id="modalTitle">QQ2000</span>
+                    </div>
+                    <button
+                        class="win98-modal-close"
+                        onclick="closeWin98Modal()"
+                    >
+                        ×
+                    </button>
+                </div>
+                <div class="win98-modal-content">
+                    <div class="win98-modal-system-icon">⚠️</div>
+                    <div class="win98-modal-message" id="modalMessage"></div>
+                </div>
+                <div class="win98-modal-buttons">
+                    <button
+                        class="win98-modal-button"
+                        onclick="closeWin98Modal()"
+                    >
+                        确定
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="./js/index.js"></script>
-</body>
-
+        <!-- 加载主应用程序 -->
+        <script src="./js/index.js"></script>
+    </body>
 </html>
