@@ -1,6 +1,6 @@
 let ws;
 let username = '';
-let currentTheme = 'retro';
+let currentTheme = 'win98';
 
 marked.setOptions({
     highlight: function (code, lang) {
@@ -177,15 +177,20 @@ function switchTheme(theme) {
     const highlightStyle = document.getElementById('highlight-style');
 
     switch (theme) {
+        case 'oldqq':
+            themeStyle.href = './styles/oldqq.css';
+            // 根据主题切换代码高亮样式
+            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/vs.css';
+            break;
         case 'chinese':
             themeStyle.href = './styles/chinese.css';
             // 根据主题切换代码高亮样式
             highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/monokai.css';
             break;
         default:
-            themeStyle.href = './styles/retro.css';
+            themeStyle.href = './styles/oldqq.css';
             // 根据主题切换代码高亮样式
-            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css';
+            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/vs.css';
     }
 
     currentTheme = theme;
@@ -193,7 +198,7 @@ function switchTheme(theme) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const savedTheme = localStorage.getItem('chatDaoTheme') || 'retro';
+    const savedTheme = localStorage.getItem('chatDaoTheme') || 'win98';
     if (savedTheme !== currentTheme) {
         switchTheme(savedTheme);
         document.getElementById('themeSelect').value = savedTheme;
