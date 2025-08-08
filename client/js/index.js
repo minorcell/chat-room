@@ -1,6 +1,6 @@
 let ws;
 let username = '';
-let currentTheme = 'win98';
+let onlineUsers = new Set();
 
 marked.setOptions({
     highlight: function (code, lang) {
@@ -23,7 +23,8 @@ function connect() {
     ws = new WebSocket(`${protocol}//${host}/ws`);
 
     ws.onopen = function (event) {
-        document.title = "已连接";
+        document.title = "已连接 - 唠嗑岛 QQ2000";
+        updateConnectionStatus('已连接');
         addSystemMessage('成功连接到服务器');
 
         requestHistory();
@@ -35,13 +36,15 @@ function connect() {
     };
 
     ws.onclose = function (event) {
-        document.title = "连接已关闭";
+        document.title = "连接已关闭 - 唠嗑岛 QQ2000";
+        updateConnectionStatus('连接已断开');
         addSystemMessage('与服务器断开连接。正在重新连接...');
-        setTimeout(connect, 3000); // 3秒后重新连接
+        setTimeout(connect, 3000);
     };
 
     ws.onerror = function (error) {
-        document.title = "连接错误";
+        document.title = "连接错误 - 唠嗑岛 QQ2000";
+        updateConnectionStatus('连接错误');
         addSystemMessage('连接发生错误');
     };
 }
@@ -94,6 +97,31 @@ function addSystemMessage(text) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+// 添加用户到用户列表
+function addUserToList(username) {
+    if (onlineUsers.has(username)) return;
+
+    onlineUsers.add(username);
+    const groupUsers = document.getElementById('groupUsers');
+    const userItem = document.createElement('div');
+    userItem.className = 'user-item';
+    userItem.dataset.username = username;
+    userItem.innerHTML = `
+        <div class="user-avatar">🐧</div>
+        <span class="user-name">${username}</span>
+    `;
+    groupUsers.appendChild(userItem);
+}
+
+// 从用户列表移除用户
+function removeUserFromList(username) {
+    onlineUsers.delete(username);
+    const userItem = document.querySelector(`[data-username="${username}"]`);
+    if (userItem) {
+        userItem.remove();
+    }
+}
+
 // 添加用户消息
 function addUserMessage(message) {
     const messagesDiv = document.getElementById('messages');
@@ -102,6 +130,13 @@ function addUserMessage(message) {
 
     const now = new Date();
     const timestamp = now.toLocaleTimeString();
+
+    // 添加用户到用户列表（如果是聊天消息）
+    if (message.event === 'chat_text' || message.event === 'enter_room') {
+        addUserToList(message.data.name);
+    } else if (message.event === 'leave_room') {
+        removeUserFromList(message.data.name);
+    }
 
     // 使用marked.js渲染Markdown内容
     const renderedContent = marked.parse(message.data.data);
@@ -172,37 +207,27 @@ function sendMessage() {
     messageInput.value = '';
 }
 
-function switchTheme(theme) {
-    const themeStyle = document.getElementById('theme-style');
-    const highlightStyle = document.getElementById('highlight-style');
-
-    switch (theme) {
-        case 'oldqq':
-            themeStyle.href = './styles/oldqq.css';
-            // 根据主题切换代码高亮样式
-            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/vs.css';
-            break;
-        case 'chinese':
-            themeStyle.href = './styles/chinese.css';
-            // 根据主题切换代码高亮样式
-            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/monokai.css';
-            break;
-        default:
-            themeStyle.href = './styles/oldqq.css';
-            // 根据主题切换代码高亮样式
-            highlightStyle.href = 'https://cdn.jsdelivr.net/npm/highlight.js/styles/vs.css';
+// 更新时间显示
+function updateTime() {
+    const timeElement = document.getElementById('currentTime');
+    if (timeElement) {
+        const now = new Date();
+        timeElement.textContent = now.toLocaleTimeString();
     }
+}
 
-    currentTheme = theme;
-    localStorage.setItem('chatDaoTheme', theme);
+// 更新连接状态
+function updateConnectionStatus(status) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (statusElement) {
+        statusElement.textContent = status;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const savedTheme = localStorage.getItem('chatDaoTheme') || 'win98';
-    if (savedTheme !== currentTheme) {
-        switchTheme(savedTheme);
-        document.getElementById('themeSelect').value = savedTheme;
-    }
+    // 开始时间更新
+    updateTime();
+    setInterval(updateTime, 1000);
 
     setTimeout(() => {
         connect();
@@ -230,5 +255,29 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Enter') {
             setUserName();
         }
+    });
+
+    // 工具栏按钮点击事件
+    document.querySelectorAll('.toolbar-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const title = this.getAttribute('title');
+            if (title) {
+                addSystemMessage(`${title}功能暂未实现`);
+            }
+        });
+    });
+
+    // 窗口控制按钮事件
+    document.querySelectorAll('.title-bar-control').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const label = this.getAttribute('aria-label');
+            if (label === '关闭') {
+                if (confirm('确定要关闭聊天窗口吗？')) {
+                    window.close();
+                }
+            } else {
+                addSystemMessage(`${label}功能暂未实现`);
+            }
+        });
     });
 });

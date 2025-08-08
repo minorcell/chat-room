@@ -4,51 +4,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="聊天道 - 支持多用户即时通讯的实时聊天室，提供多种主题选项">
+    <meta name="description" content="唠嗑岛 - 支持多用户即时通讯的实时聊天室，提供多种主题选项">
     <meta name="keywords" content="聊天室, 实时聊天, 在线聊天, 即时通讯, 多用户聊天">
     <meta name="author" content="https://github.com/minorcell">
     <link rel="icon" href="./public/qq.jpeg">
     </link>
-    <title>聊天道 - 实时在线聊天室</title>
-    <link rel="stylesheet" href="./styles/win98.css" id="theme-style">
+    <title>唠嗑岛 - 实时在线聊天室</title>
+    <link rel="stylesheet" href="./styles/index.css" id="theme-style">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/index.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/default.css" id="highlight-style">
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>聊天道</h1>
-            <div class="header-controls">
-                <div class="online-info">
-                    <span>在线人数: </span>
-                    <span id="onlineCount">0</span>
+    <div class="qq-window">
+        <!-- QQ标题栏 -->
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <img src="./public/qq.jpeg" alt="QQ" class="qq-icon">
+                唠嗑岛 - QQ2000
+            </div>
+            <div class="title-bar-controls">
+                <button class="title-bar-control" type="button" aria-label="最小化"></button>
+                <button class="title-bar-control" type="button" aria-label="最大化"></button>
+                <button class="title-bar-control close" type="button" aria-label="关闭"></button>
+            </div>
+        </div>
+
+        <!-- 主体内容区域 -->
+        <div class="main-content">
+            <!-- 左侧用户列表 -->
+            <div class="user-panel">
+                <div class="user-panel-header">
+                    <span>我的好友</span>
+                    <span class="online-count">在线 <span id="onlineCount">0</span></span>
                 </div>
-                <div class="theme-selector">
-                    <select id="themeSelect">
-                        <option value="oldqq">换旧企鹅</option>
-                        <option value="chinese">中国风</option>
-                    </select>
+                <div class="user-list" id="userList">
+                    <div class="user-group">
+                        <div class="group-header">
+                            <span class="group-icon">▼</span>
+                            <span class="group-name">聊天室用户</span>
+                        </div>
+                        <div class="group-users" id="groupUsers">
+                            <!-- 用户将动态添加到这里 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户信息输入区域 -->
+                <div class="user-input-area">
+                    <input type="text" id="nameInput" placeholder="请输入您的昵称" maxlength="20">
+                    <button id="setNameButton">登录</button>
+                </div>
+            </div>
+
+            <!-- 右侧聊天区域 -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <span class="chat-title">群聊 - 唠嗑岛聊天室</span>
+                </div>
+
+                <div class="chat-messages" id="messages">
+                    <div class="system-message">
+                        <span class="timestamp">系统消息</span>
+                        <span class="content">欢迎来到唠嗑岛聊天室！</span>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="input-toolbar">
+                        <button class="toolbar-btn" title="发送表情">😊</button>
+                        <button class="toolbar-btn" title="发送图片">🖼️</button>
+                        <button class="toolbar-btn" title="发送文件">📎</button>
+                    </div>
+                    <div class="input-box">
+                        <textarea id="messageInput" placeholder="输入您的消息（支持Markdown）..." rows="3"></textarea>
+                        <div class="input-controls">
+                            <button id="sendButton" class="send-btn">发送</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="input-area">
-            <input type="text" id="nameInput" placeholder="请输入您的昵称" maxlength="20">
-            <button id="setNameButton">设置昵称</button>
-        </div>
-
-        <div class="chat-area">
-            <div class="messages" id="messages">
-                <div class="system-message">
-                    <span class="timestamp">系统消息</span>
-                    <span class="content">欢迎来到聊天道聊天室！</span>
-                </div>
+        <!-- 底部状态栏 -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span id="connectionStatus">已连接</span>
             </div>
-            <div class="input-area">
-                <textarea id="messageInput" placeholder="输入您的消息（支持Markdown）..." rows="3"></textarea>
-                <button id="sendButton">发送</button>
+            <div class="status-right">
+                <span class="status-time" id="currentTime"></span>
             </div>
         </div>
     </div>
